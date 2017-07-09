@@ -1,0 +1,7 @@
+include  location/@server_error_handler;
+
+location @custom_error_handler {
+  include  ext/php.conf;
+
+  try_files  /$status.php /$status.html @server_error_handler;
+}

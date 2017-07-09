@@ -1,0 +1,4 @@
+location @server_error_handler {
+  root       /usr/share/nginx/error_pages;
+  try_files  /$status.html /500.html =500;
+}

@@ -1,0 +1,45 @@
+# Replace: DOMAIN_NAME, SUB_DOMAIN_NAME
+
+server {
+  listen       443 ssl http2;
+  listen       [::]:443 ssl http2;
+  server_name  SUB_DOMAIN_NAME.DOMAIN_NAME;
+
+  # Prevent BREACH Attack
+  gzip  off;
+
+# ssl_certificate      ssl/SUB_DOMAIN_NAME.DOMAIN_NAME.crt;
+# ssl_certificate_key  ssl/SUB_DOMAIN_NAME.DOMAIN_NAME.key;
+
+# access_log           /var/log/nginx/SUB_DOMAIN_NAME.DOMAIN_NAME/access.log;
+# error_log            /var/log/nginx/SUB_DOMAIN_NAME.DOMAIN_NAME/error.log;
+
+  root                 /usr/share/nginx/DOMAIN_NAME/SUB_DOMAIN_NAME;
+  index                index.php index.html index.htm;
+
+  include  location/@custom_error_handler;
+
+  error_page  404 500 @custom_error_handler;
+
+  location ~ \.php$ {
+    include  ext/php.conf;
+
+    fastcgi_intercept_errors  on;
+  }
+}
+
+server {
+  listen       443 ssl http2;
+  listen       [::]:443 ssl http2;
+  server_name  DOMAIN_NAME;
+
+  return       301 https://SUB_DOMAIN_NAME.$server_name$request_uri;
+}
+
+server {
+  listen       80;
+  listen       [::]:80;
+  server_name  DOMAIN_NAME SUB_DOMAIN_NAME.DOMAIN_NAME;
+
+  return       301 https://SUB_DOMAIN_NAME.DOMAIN_NAME$request_uri;
+}

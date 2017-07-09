@@ -1,0 +1,55 @@
+# Replace: DOMAIN_NAME, SUB_DOMAIN_NAME, PORT
+
+upstream nodejs {
+  server     127.0.0.1:PORT;
+  keepalive  8;
+}
+
+server {
+  listen       443 ssl http2;
+  listen       [::]:443 ssl http2;
+  server_name  SUB_DOMAIN_NAME.DOMAIN_NAME;
+
+  # Prevent BREACH Attack
+  gzip  off;
+
+# ssl_certificate      ssl/SUB_DOMAIN_NAME.DOMAIN_NAME.crt;
+# ssl_certificate_key  ssl/SUB_DOMAIN_NAME.DOMAIN_NAME.key;
+
+# access_log           /var/log/nginx/SUB_DOMAIN_NAME.DOMAIN_NAME/access.log;
+# error_log            /var/log/nginx/SUB_DOMAIN_NAME.DOMAIN_NAME/error.log;
+
+  root                 /usr/share/nginx/DOMAIN_NAME/SUB_DOMAIN_NAME;
+  index                index.html index.htm;
+
+  include  location/@server_error_handler;
+
+  location / {
+    include  conf/nodejs.conf;
+
+    proxy_pass      https://nodejs;
+    proxy_redirect  off;
+
+    error_page  502 @error_handler;
+  }
+
+  location @error_handler {
+    try_files  /$status.html /50x.html @server_error_handler;
+  }
+}
+
+server {
+  listen       443 ssl http2;
+  listen       [::]:443 ssl http2;
+  server_name  DOMAIN_NAME;
+
+  return       301 https://SUB_DOMAIN_NAME.$server_name$request_uri;
+}
+
+server {
+  listen       80;
+  listen       [::]:80;
+  server_name  DOMAIN_NAME SUB_DOMAIN_NAME.DOMAIN_NAME;
+
+  return       301 https://SUB_DOMAIN_NAME.DOMAIN_NAME$request_uri;
+}
