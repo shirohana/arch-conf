@@ -1,5 +1,5 @@
-# nginx-conf
+# arch-conf
 
-Nginx environment on Hana's Arch Linux machine.
+Environment on Hana's Arch Linux machine.
 
-Note) This repo only contains the files I modified since Nginx has been installed.
+Note) This repo only contains the files I've been modified since installation.
